@@ -22,7 +22,7 @@
         :resolution="resolution"
         :is-revealing="isRevealing"
         :is-status-icon="survivalStore.hasAnswered"
-        :timer-duration="configStore.revealTime"
+        :timer-duration="15"
       />
     </section>
 
@@ -37,119 +37,22 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useSurvivalStore } from "@/stores/survival";
-import { useGameStore } from "@/stores/game";
-import { useConfigStore } from "@/stores/config";
-import { useSoundStore } from "@/stores/sound";
 import PixelCanvas from "@/components/canvas/PixelCanvas.vue";
 import CountdownTransition from "@/components/page-layout/CountdownTransition.vue";
 import GameHeader from "@/components/game-ui/GameHeader.vue";
-import { statusIcons } from "@/data/statusIcons";
 import AnswerButtons from "@/components/game-ui/AnswerButtons.vue";
-import { workerClearTimeout, workerSetTimeout } from "@/services/workerTimers";
 import MinimalSettings from "@/components/page-ui/MinimalSettings.vue";
+import { useSurvivalFlow } from "@/composables/useSurvivalFlow";
 
-const router = useRouter();
-const survivalStore = useSurvivalStore();
-const gameStore = useGameStore();
-const configStore = useConfigStore();
-const soundStore = useSoundStore();
-
-const resolution = ref(16);
-const pixelData = ref(Array(256).fill(0));
-const isRevealing = ref(true);
-
-let feedbackTimeoutId = null;
-let nextRoundTimeoutId = null;
-
-/**
- * Bereitet die Anzeige für das aktuelle Bild vor
- */
-const setupDrawing = () => {
-  if (survivalStore.currentDrawing) {
-    survivalStore.hasAnswered = false;
-    isRevealing.value = true;
-    pixelData.value = survivalStore.currentDrawing.data;
-    resolution.value = Math.sqrt(pixelData.value.length);
-  }
-};
-
-/**
- * Verarbeitet die Antwort im Survival-Modus
- */
-const handleAnswer = (answer) => {
-  // Guard: Nur Antworten zulassen, wenn wir in der Revealing-Phase sind und Zeit da ist
-  if (
-    gameStore.gameState !== "revealing" ||
-    survivalStore.hasAnswered ||
-    survivalStore.timeLeft <= 0
-  )
-    return;
-
-  survivalStore.hasAnswered = true;
-  gameStore.setGameState("feedback");
-
-  workerClearTimeout(feedbackTimeoutId);
-  workerClearTimeout(nextRoundTimeoutId);
-
-  // 1. Visuelles Feedback
-  if (answer.isCorrect) {
-    survivalStore.handleCorrectAnswer();
-    pixelData.value = statusIcons.success;
-    soundStore.playSound("correct");
-  } else {
-    survivalStore.handleWrongAnswer();
-    pixelData.value = statusIcons.failure;
-    // Sound wird bereits im Store abgespielt
-  }
-
-  // 2. Feedback-Phase (Icon zeigen)
-  feedbackTimeoutId = workerSetTimeout(() => {
-    if (survivalStore.isGameOver) return;
-
-    isRevealing.value = false;
-    pixelData.value = survivalStore.currentDrawing.data;
-    gameStore.setGameState("revealed");
-
-    // 3. Kurze Pause, dann nächstes Bild
-    nextRoundTimeoutId = workerSetTimeout(() => {
-      if (survivalStore.isGameOver) return;
-
-      survivalStore.setNextDrawing(); // Setzt gameState intern wieder auf 'revealing'
-      setupDrawing();
-    }, 1000);
-  }, 1000);
-};
-
-/**
- * Initialer Start nach der Transition
- */
-const start = () => {
-  survivalStore.startSurvival();
-  setupDrawing();
-};
-
-/**
- * Überwacht den Game-Over Status für den Redirect
- */
-watch(
-  () => survivalStore.isGameOver,
-  (over) => {
-    if (over) {
-      gameStore.setGameState("gameover");
-      router.push("/gameover");
-    }
-  },
-);
-
-onUnmounted(() => {
-  workerClearTimeout(feedbackTimeoutId);
-  workerClearTimeout(nextRoundTimeoutId);
-  // Beim Unmount nur Timer/Timeouts aufräumen.
-  // Den Score resetten wir beim (neu) Starten des Survival-Spiels.
-});
+const {
+  resolution,
+  pixelData,
+  isRevealing,
+  handleAnswer,
+  start,
+  survivalStore,
+  gameStore,
+} = useSurvivalFlow();
 </script>
 
 <style scoped>

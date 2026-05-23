@@ -19,5 +19,8 @@
             "path": "/api/cron-daily",
             "schedule": "0 7 * * *"
         }
-    ]
+    ],
+    "env": {
+        "CRON_SECRET": "@cron-secret"
+    }
 }

@@ -20,7 +20,14 @@ function generateOptions(currentDrawing, allDrawings) {
 }
 
 export default async function handler(req, res) {
-  if (req.headers["user-agent"] !== "vercel-cron/1.0") {
+  // Secure: verify CRON_SECRET or Vercel cron header
+  const authHeader = req.headers["authorization"];
+  const cronSecret = process.env.CRON_SECRET;
+
+  const isVercelCron = req.headers["user-agent"] === "vercel-cron/1.0";
+  const hasValidSecret = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  if (!isVercelCron && !hasValidSecret) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 

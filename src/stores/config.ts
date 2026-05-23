@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { Ref } from "vue";
-import allDrawings from "../data/drawings.json";
-import type { Drawing } from "./game";
 import drawings from "@/data/drawings.json";
+import type { Drawing } from "./game";
 import { toast } from "vue3-toastify";
 import { useSoundStore } from "./sound";
 import router from "@/router";
@@ -84,7 +83,7 @@ export const useConfigStore = defineStore("config", () => {
   const toggleCategory = (category: string) => {
     const index = selectedCategories.value.indexOf(category);
     if (index > -1) {
-      const tempPoolSize = allDrawings.filter((d) =>
+      const tempPoolSize = (drawings as Drawing[]).filter((d) =>
         selectedCategories.value
           .filter((c) => c !== category)
           .includes(d.category),

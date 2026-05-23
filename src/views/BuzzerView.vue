@@ -9,7 +9,7 @@
     </transition>
 
     <section class="canvas-section">
-    <MinimalSettings />
+      <MinimalSettings />
       <GameHeader
         :max="timerDuration"
         :count="timer"
@@ -37,7 +37,7 @@
           v-if="showAnswers"
           :hasAnswered="hasAnswered"
           :answers="currentRound?.options || []"
-          @answered="handleAnswer"
+          @answered="handleBuzzerAnswer"
         />
         <div v-else class="buzzer-container">
           <button @click="handleBuzzerPress" class="neon-buzzer">
@@ -51,174 +51,69 @@
 </template>
 
 <script setup>
-import { computed, ref, onUnmounted, watch } from "vue";
-import { useRouter } from "vue-router";
+import { ref, watch } from "vue";
 import PixelCanvas from "@/components/canvas/PixelCanvas.vue";
-import { useGameStore } from "@/stores/game";
-import { usePlayerStore } from "@/stores/player";
-import { useSoundStore } from "@/stores/sound";
-import { useConfigStore } from "@/stores/config";
-import { useOnlineStore } from "@/stores/online";
 import CountdownTransition from "@/components/page-layout/CountdownTransition.vue";
 import GameHeader from "@/components/game-ui/GameHeader.vue";
 import MinimalSettings from "@/components/page-ui/MinimalSettings.vue";
 import AnswerButtons from "@/components/game-ui/AnswerButtons.vue";
-import { statusIcons } from "@/data/statusIcons";
-import {
-  workerClearInterval,
-  workerClearTimeout,
-  workerSetInterval,
-  workerSetTimeout,
-} from "@/services/workerTimers";
+import { useRoundFlow } from "@/composables/useRoundFlow";
 
-const router = useRouter();
-const playerStore = usePlayerStore();
-const onlineStore = useOnlineStore();
-const gameStore = useGameStore();
-const configStore = useConfigStore();
-const soundStore = useSoundStore();
+const {
+  resolution,
+  pixelData,
+  hasAnswered,
+  hasAnsweredCorrectly,
+  isRevealing,
+  timer,
+  timerDuration,
+  currentRound,
+  maxRounds,
+  handleAnswer,
+  startTimer,
+  clearAllTimers,
+  gameStore,
+  playerStore,
+  soundStore,
+} = useRoundFlow();
 
-const resolution = ref(16);
-const pixelData = ref(Array(256).fill(0));
-const hasAnswered = ref(false);
-const isRevealing = ref(true);
-const hasAnsweredCorrectly = ref(false);
-const timer = ref(configStore.revealTime);
-const timerDuration = configStore.revealTime;
-
+// Buzzer-specific state
 const showAnswers = ref(false);
-const potentialPoints = ref(0);
 const pauseReveal = ref(false);
-
-let timerId = null;
-let feedbackTimeoutId = null;
-let solutionTimeoutId = null;
-
-const currentRound = computed(() => gameStore.currentRound);
-const maxRounds = computed(() => configStore.maxRounds);
-
-const clearAllLocalTimers = () => {
-  workerClearInterval(timerId);
-  workerClearTimeout(feedbackTimeoutId);
-  workerClearTimeout(solutionTimeoutId);
-  timerId = null;
-  feedbackTimeoutId = null;
-  solutionTimeoutId = null;
-};
-
-const startTimer = () => {
-  workerClearInterval(timerId);
-  timer.value = timerDuration;
-
-  timerId = workerSetInterval(() => {
-    timer.value--;
-    if (timer.value <= 3 && timer.value > 0) soundStore.playSound("timer");
-
-    if (timer.value <= 0) {
-      workerClearInterval(timerId);
-      if (!showAnswers.value) {
-        gameStore.setGameState("answering");
-      }
-      
-      handleAnswer(null);
-    }
-  }, 1000);
-};
-
-const setupDrawing = () => {
-  if (!currentRound.value) return;
-
-  clearAllLocalTimers();
-  hasAnswered.value = false;
-  hasAnsweredCorrectly.value = false;
-  isRevealing.value = true;
-  showAnswers.value = false;
-  pauseReveal.value = false;
-
-  pixelData.value = currentRound.value.data;
-  resolution.value = Math.sqrt(pixelData.value.length);
-
-  startTimer();
-};
+const potentialPoints = ref(0);
 
 const handleBuzzerPress = () => {
-  if (gameStore.gameState !== "revealing" || showAnswers.value || hasAnswered.value) {
-    return;
-  }
+  if (gameStore.gameState !== "revealing" || showAnswers.value || hasAnswered.value) return;
 
   potentialPoints.value = timer.value;
   showAnswers.value = true;
   pauseReveal.value = true;
   gameStore.setGameState("answering");
   soundStore.playSound("buzz");
-  workerClearInterval(timerId);
-  timer.value = 5; 
-  
-  timerId = workerSetInterval(() => {
-    timer.value--;
-    
-    if (timer.value <= 2 && timer.value > 0) {
-      soundStore.playSound("timer");
-    }
 
-    if (timer.value <= 0) {
-      workerClearInterval(timerId);
-      handleAnswer(null);
-    }
-  }, 1000);
+  // Switch to 5s answer window
+  clearAllTimers();
+  startTimer(5);
 };
 
-const handleAnswer = (selectedOption) => {
-  if (gameStore.gameState !== "answering" || hasAnswered.value) return;
-
-  hasAnswered.value = true;
-  pauseReveal.value = false;
-  gameStore.setGameState("feedback");
-  clearAllLocalTimers();
-
-  if (selectedOption?.isCorrect) {
-    pixelData.value = statusIcons.success;
-    hasAnsweredCorrectly.value = true;
-    playerStore.addPoints(potentialPoints.value);
-    soundStore.playSound("correct");
-  } else {
-    pixelData.value = statusIcons.failure;
-    hasAnsweredCorrectly.value = false;
-    soundStore.playSound("incorrect");
-  }
-
-  feedbackTimeoutId = workerSetTimeout(() => {
-    isRevealing.value = false;
-    if (currentRound.value) {
-      pixelData.value = currentRound.value.data;
-    }
-    gameStore.setGameState("revealed");
-
-    solutionTimeoutId = workerSetTimeout(() => {
-      if (gameStore.currentRoundIndex >= maxRounds.value - 1) {
-        onlineStore.broadcastScore();
-        gameStore.setGameState("gameover");
-        router.push("/gameover");
-      } else {
-        gameStore.nextRound();
-      }
-    }, 1500);
-  }, 1500);
+const handleBuzzerAnswer = (selectedOption) => {
+  // Override points to use the moment buzzer was pressed
+  const savedTimer = timer.value;
+  timer.value = potentialPoints.value;
+  handleAnswer(selectedOption);
+  timer.value = savedTimer;
 };
 
+// Reset buzzer state on new round
 watch(
   () => gameStore.gameState,
-  (newState) => {
-    if (newState === "revealing") {
-      setupDrawing();
+  (state) => {
+    if (state === "revealing") {
+      showAnswers.value = false;
+      pauseReveal.value = false;
     }
   },
-  { immediate: true },
 );
-
-onUnmounted(() => {
-  clearAllLocalTimers();
-});
 </script>
 
 <style scoped>
