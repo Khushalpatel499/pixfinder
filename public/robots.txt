@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /editor
+Disallow: /classic
+Disallow: /online
+Disallow: /gameover
+Disallow: /survival
+Disallow: /buzzer
+Disallow: /inspect
+Disallow: /lobby
+Disallow: /party-lobby
+
+Sitemap: https://www.pixreveal.com/sitemap.xml

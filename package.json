@@ -1,0 +1,42 @@
+{
+  "name": "pix-reveal",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build"
+  },
+  "dependencies": {
+    "@apinator/client": "^2.0.0",
+    "@apinator/server": "^2.0.0",
+    "@vercel/analytics": "^2.0.2-canary",
+    "@vercel/kv": "^3.0.0",
+    "pinia": "^3.0.4",
+    "qrcode.vue": "^3.9.0",
+    "redis": "^5.12.1",
+    "vue": "^3.5.29",
+    "vue-router": "^5.0.3",
+    "vue3-toastify": "^0.2.9"
+  },
+  "devDependencies": {
+    "@iconify/vue": "^5.0.0",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^24.11.0",
+    "@vitejs/plugin-vue": "^6.0.4",
+    "@vue/tsconfig": "^0.8.1",
+    "npm-run-all2": "^8.0.4",
+    "rollup-plugin-visualizer": "^7.0.1",
+    "typescript": "~5.9.3",
+    "unplugin-fonts": "^1.4.0",
+    "vite": "^7.3.1",
+    "vite-plugin-vue-devtools": "^8.0.6",
+    "vue-tsc": "^3.2.5"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}

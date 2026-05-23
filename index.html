@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>PixReveal — Online Pixel Art Quiz & Multiplayer Guessing Game</title>
+  
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PixReveal">
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="canonical" href="https://www.pixreveal.com/">
+    <link rel="dns-prefetch" href="//gc.zgo.at">
+    <link rel="preconnect" href="https://api.iconify.design">
+    <meta name="theme-color" content="#0a0a0c" />
+  
+    <meta name="description" content="Challenge your friends in PixReveal! A minimalist pixel art guessing game. Quick rounds, multiple game modes, and competitive online multiplayer fun.">
+  
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.pixreveal.com/">
+    <meta property="og:title" content="PixReveal — Minimalist Pixel Art Quiz">
+    <meta property="og:description" content="Can you guess the pixel art faster than your friends? Play PixReveal now!">
+    <meta property="og:image" content="https://www.pixreveal.com/og-image.png">
+  
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.pixreveal.com/">
+    <meta property="twitter:title" content="PixReveal — Minimalist Pixel Art Quiz">
+    <meta property="twitter:description"
+      content="Can you guess the pixel art faster than your friends? Play PixReveal now!">
+    <meta property="twitter:image" content="https://www.pixreveal.com/og-image.png">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "PixReveal",
+        "description": "A fast-paced pixel art guessing game. Test your recognition skills in various modes like Inspect, Gravity and Survival.",
+        "genre": ["Puzzle", "Quiz", "Casual Game", "User Generated Content", "Partygame", "Jackbox alternative", "Daily Challenge"],
+        "gamePlatform": "Web Browser",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "url": "https://www.pixreveal.com",
+        "author": {
+          "@type": "Person",
+          "name": "Christian Eckardt"
+        },
+        "subjectOf": {
+          "@type": "VideoObject",
+          "name": "PixReveal Gameplay Trailer",
+          "description": "Watch the official gameplay and explanation of PixReveal.",
+          "thumbnailUrl": [
+            "https://img.youtube.com/vi/Prz-jTEg7fU/maxresdefault.jpg"
+          ],
+          "uploadDate": "2026-03-01T08:00:00+01:00",
+          "contentUrl": "https://www.youtube.com/watch?v=Prz-jTEg7fU",
+          "embedUrl": "https://www.youtube.com/embed/Prz-jTEg7fU"
+        }
+      }
+    </script>
+    </head>
+  <body>
+    <style>
+      body {
+        background-color: #1a0f2e;
+      }
+      #app {
+        touch-action: manipulation;
+      }
+      #app:empty {
+        display: none;
+      }
+    </style>
+    <noscript>
+      <h1>PixReveal - Pixel Art Guessing Game</h1>
+      <p>An interactive multiplayer party game built with Vue 3 and TypeScript.
+        Reveal pixel art in Solo, Gravity, Inspect, Buzzer, Survival or Multiplayer mode. Local party mode provides a free Jackbox alternative. Host the game on the big screen and control via your phones. Daily challenges with global leaderboard.
+        Submit your own pixel art and let the community guess!</p>
+    </noscript>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

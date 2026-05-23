@@ -1,0 +1,124 @@
+<template>
+  <div class="social-bar">
+    <button
+      class="btn-outline"
+      @click="share('whatsapp')"
+      data-sfx="click"
+      title="Share via WhatsApp"
+    >
+      <Icon icon="streamline-pixel:logo-whatapp" />
+    </button>
+
+    <button
+      class="btn-outline"
+      @click="share('x')"
+      data-sfx="click"
+      title="Share on X"
+    >
+      <Icon icon="pixel:x" />
+    </button>
+
+    <button
+      class="btn-outline"
+      @click="share('facebook')"
+      data-sfx="click"
+      title="Share on Facebook"
+    >
+      <Icon icon="streamline-pixel:logo-social-media-facebook-circle" />
+    </button>
+
+    <button
+      class="btn-outline"
+      @click="share('reddit')"
+      data-sfx="click"
+      title="Share on Reddit"
+    >
+      <Icon icon="pixel:reddit" />
+    </button>
+    <button
+      v-if="canNativeShare"
+      class="btn-outline"
+      @click="shareNative"
+      title="More sharing options"
+      data-sfx="click"
+    >
+      <Icon icon="pixel:share" />
+    </button>
+  </div>
+</template>
+
+<script setup>
+import { onMounted, ref } from "vue";
+import { Icon } from "@iconify/vue";
+
+const props = defineProps({
+  msg: {
+    type: String,
+    default: "Check out PixReveal! Can you guess the pixel art faster than me?",
+  },
+});
+
+const share = (platform) => {
+  const url = window.location.origin;
+  const text = encodeURIComponent(props.msg);
+  const fullUrl = encodeURIComponent(url);
+
+  const links = {
+    whatsapp: `https://api.whatsapp.com/send?text=${text}%20${fullUrl}`,
+    x: `https://twitter.com/intent/tweet?text=${text}&url=${fullUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${fullUrl}`,
+    reddit: `https://www.reddit.com/submit?url=${fullUrl}&title=${text}`,
+  };
+
+  if (links[platform]) {
+    window.open(links[platform], "_blank", "noopener,noreferrer");
+  }
+};
+
+const canNativeShare = ref(false);
+
+onMounted(() => {
+  canNativeShare.value = !!navigator.share;
+});
+
+const shareNative = async () => {
+  try {
+    await navigator.share({
+      title: "PixReveal",
+      text: props.msg,
+      url: window.location.origin,
+    });
+  } catch (err) {
+    console.log("Native share failed", err);
+  }
+};
+</script>
+
+<style scoped>
+.social-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.btn-outline {
+  padding: 8px;
+  width: unset;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border: none;
+  color: var(--white);
+  filter: drop-shadow(0 0 8px var(--neon-social));
+  opacity: 0.8;
+}
+
+.social-bar .btn-outline:hover {
+  background: var(--neon-social);
+  box-shadow: 0 0 20px var(--white);
+}
+</style>

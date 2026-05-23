@@ -1,0 +1,387 @@
+@font-face {
+  font-family: "8bit";
+  src: url("@/assets/8-BIT_WO.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: "Exo 2", "Rubik", sans-serif;
+  --bg-dark: #0a0a0c;
+  --card-bg: #0a0216;
+  --color-secondary: #ccc;
+  --border-color: #334155;
+  --primary: #ff3562;
+  --neon-social: #cc00ff;
+  --white: #f9f4f5;
+  --text-main: #e0e0e0;
+  --neon-success: #32cd32;
+  --neon-error: #ff003c;
+
+  --neon-pink: #ff1493;
+  --pink-glow: rgba(255, 20, 147, 0.4);
+  --pink-bg: rgba(255, 20, 147, 0.05);
+
+  --neon-blue: #1e90ff;
+  --blue-glow: rgba(30, 144, 255, 0.4);
+  --blue-bg: rgba(30, 144, 255, 0.05);
+
+  --neon-cyan: #00f2ff;
+  --cyan-glow: rgba(0, 242, 255, 0.4);
+  --cyan-bg: rgba(0, 242, 255, 0.05);
+
+  --neon-purple: #9d50bb;
+  --purple-glow: rgba(157, 80, 187, 0.4);
+  --purple-bg: rgba(157, 80, 187, 0.05);
+
+  --neon-yellow: #ffb000;
+  --yellow-glow: rgba(255, 176, 0, 0.4);
+  --yellow-bg: rgba(255, 176, 0, 0.05);
+  --toastify-font-family: "Exo 2", "Rubik", sans-serif;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle, #4a1d63 0%, #0a0510 100%);
+  color: var(--text-main);
+  font-family: var(--font-display), "Inter", sans-serif;
+}
+
+a,
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button {
+  background: none;
+  border-color: transparent;
+}
+
+.logo {
+  font-size: 22px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: #fff;
+  margin-bottom: 32px;
+  margin-right: -8px;
+}
+
+.logo span {
+  color: var(--primary);
+}
+
+.start-btn {
+  width: 100%;
+  background: var(--primary);
+  color: #000;
+  border: none;
+  padding: 16px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  animation: arcadeBlink 1.4s infinite;
+  transition: all 0.3s;
+}
+
+.start-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+.start-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #b45309;
+}
+
+.btn-outline {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  backdrop-filter: blur(4px);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  padding: 10px;
+  text-transform: uppercase;
+  font-family: inherit;
+  letter-spacing: 2px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* only hover effect on desktop */
+
+@media (hover: hover) {
+  .btn-outline:not(:disabled):hover {
+    background: var(--primary);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-outline:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pulse-btn {
+  animation: pulse 2s infinite;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+  @media (min-width: 768px) {
+    max-width: calc(1000px + 2rem);
+    grid-template-columns: 1fr 400px;
+    gap: 64px;
+  }
+  @media (min-width: 1024px) {
+    position: relative;
+
+    padding-right: 64px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
+  font-family: "8bit";
+  font-size: 22px;
+  text-transform: uppercase;
+}
+
+h2 {
+  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
+}
+
+.loading-text {
+  color: var(--primary);
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: pulse 1.5s infinite;
+}
+
+.input-group {
+  margin-bottom: 2rem;
+}
+
+.input-group label {
+  display: block;
+  color: var(--primary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+input[type="text"] {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border: 2px solid var(--primary);
+  padding: 10px;
+  color: #fff;
+  font-size: 20px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+  border-color: var(--primary);
+}
+
+.close-btn {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 32px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.close-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.close-btn:active {
+  transform: scale(0.95);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: none;
+  color: var(--white);
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  @media (min-width: 576px) {
+    font-size: 32px;
+  }
+}
+
+.back-btn:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes floating {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes sharp-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(1px, 1px);
+  }
+  50% {
+    transform: translate(-1px, -1px);
+  }
+  100% {
+    transform: translate(1px, -1px);
+  }
+}
+
+@keyframes blur-fade {
+  0%,
+  100% {
+    filter: blur(0px);
+    opacity: 1;
+  }
+  50% {
+    filter: blur(2px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes slow-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes flickerBlackout {
+  0% {
+    filter: brightness(1);
+  }
+  10% {
+    filter: brightness(0.01);
+  }
+  15% {
+    filter: brightness(1);
+  }
+  20% {
+    filter: brightness(0.01);
+  }
+  30% {
+    filter: brightness(0.5);
+  }
+  40% {
+    filter: brightness(0.01);
+  }
+  100% {
+    filter: brightness(0.01);
+  }
+}
